@@ -5,22 +5,20 @@ import com.revoltcode.orderservice.dto.TransactionRequest;
 import com.revoltcode.orderservice.dto.TransactionResponse;
 import com.revoltcode.orderservice.entity.Order;
 import com.revoltcode.orderservice.repository.OrderRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 @Service
+@RequiredArgsConstructor
 public class OrderService {
 
     private final OrderRepository orderRepository;
-    private final RestTemplate restTemplate;
 
-    @Autowired
-    public OrderService(OrderRepository orderRepository, RestTemplateBuilder restTemplateBuilder) {
-        this.orderRepository = orderRepository;
-        this.restTemplate = restTemplateBuilder.build();
-    }
+    private final RestTemplate restTemplate;
 
     public TransactionResponse saveOrder(TransactionRequest transactionRequest){
 
@@ -31,7 +29,7 @@ public class OrderService {
         payment.setAmount(order.getPrice());
 
         //perform REST call to payment api and add order id
-        Payment paymentResponse = restTemplate.postForObject("http://localhost:9191/payment/doPayment", payment, Payment.class);
+        Payment paymentResponse = restTemplate.postForObject("http://PAYMENT-SERVICE/payment/doPayment", payment, Payment.class);
 
 
 
